@@ -1,0 +1,15 @@
+{
+  "name": "sprite-generation-test",
+  "version": "1.0.0",
+  "description": "Testing Sprite Image Creation",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "Kanishk Kalyani",
+  "license": "ISC",
+  "dependencies": {
+    "spritesmith": "^3.4.0"
+  }
+}

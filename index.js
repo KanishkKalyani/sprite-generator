@@ -27,7 +27,7 @@ source.shift();
 Spritesmith.run({
   src: source,
   algorithm: 'left-right', // Available algotithms are: "top-down"	"left-right"	"diagonal"	"alt-diagonal"	"binary-tree"
-  padding: 25
+  padding: 5 // Edit padding as per requirement
 }, (err, result) => {
   // If there was an error, throw it
   if (err) {

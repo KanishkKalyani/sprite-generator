@@ -2,15 +2,35 @@
 ---------------------------------------------------------------------------------------------------
   Instructions for use:
 
-    1. Add the images in /src/icons folder to be included in the spritesheet.
-    2. Change the file names in lines 38 and 41 to appropriate file names in context with your use.
-    3. Do 'npm start'
+    1. Add the images in './src/icons' folder to be included in the spritesheet.
+    2. Change the 'fileName' in line 15 to appropriate file name in context with your use.
+    3. Change the 'algorithm' in line 26 to one of the algorithms listed above that line.
+    4. Change the 'padding' in line 31.
+    5. Run 'npm start' in the command line
+
 ---------------------------------------------------------------------------------------------------
 */
 
 const fs = require('fs');
-const Spritesmith = require('spritesmith');
- 
+const SpriteSmith = require('spritesmith');
+
+// EDIT THIS VARIABLE's (fileName) VALUE, IT WILL BE THE NAME OF GENERATED SPRITE IMAGE AND CSS FILE
+const fileName = "output-sprite";
+
+/*
+  EDIT THIS VARIABLE's (algorithm) VALUE, IT WILL BE ALGORITHM USED IN GENERATING THE SPRITE IMAGE
+  Available algotithms are: 
+  1. "top-down"
+  2. "left-right"
+  3. "diagonal"
+  4. "alt-diagonal"
+  5. "binary-tree" 
+*/
+const algorithm = 'left-right';
+
+// EDIT THIS VARIABLE's (padding) VALUE, IT WILL BE THE PADDING USED BETWEEN THE IMAGES IN THE GENERATED SPRITE IMAGE
+const padding = 1;
+
 const _dirname = './src/icons';
 const _outputDir = './src/output';
 const dir = fs.opendirSync('./src/icons');
@@ -24,28 +44,52 @@ dir.closeSync();
 source.shift();
 
 // Generate our spritesheet
-Spritesmith.run({
+
+SpriteSmith.run({
   src: source,
-  algorithm: 'left-right', // Available algotithms are: "top-down"	"left-right"	"diagonal"	"alt-diagonal"	"binary-tree"
-  padding: 5 // Edit padding as per requirement
+  algorithm: algorithm,
+  padding: padding
 }, (err, result) => {
+
   // If there was an error, throw it
   if (err) {
     throw err;
   }
- 
-  // Output the image -
 
-  // Change name of output sprite png file
-  fs.writeFileSync(_outputDir + '/output-sprite.png', result.image); 
+  const getCssString = () => {
+    const coordinateArray = Object.entries(result.coordinates);
 
-  // Change name of output sprite js file which contains dimensional details of the generated sprite image, useful to use the spritesheet in css
-  fs.writeFileSync(_outputDir+ '/output-sprite.js', 
-    JSON.stringify({
-      ...result.coordinates,
-      properties: result.properties
-    }, null, 4));
+    let CssString = '';
+
+    for(let index = 0; index < coordinateArray.length; index++) {
+      CssString += getSingleClassInCssFormat(coordinateArray[index]);
+    }
+
+    return CssString;
+  };
+
+  const getSingleClassInCssFormat = (imageCoordinatesArr) => {
+
+    return `
+    .${getImageName(imageCoordinatesArr[0])} {
+      width: ${imageCoordinatesArr[1].width}px;
+      height: ${imageCoordinatesArr[1].height}px;
+      background: url('${fileName}.png') -${imageCoordinatesArr[1].x}px -${imageCoordinatesArr[1].y}px;
+    }
+  `;
   }
-);
+
+  const getImageName = (imageSrc) => {
+
+    return imageSrc.substring(12, imageSrc.length - 4);
+  };
+ 
+  // Output the image and the CSS file -
+
+  fs.writeFileSync(_outputDir + `/${fileName}.png`, result.image); 
+
+  fs.writeFileSync(_outputDir + `/${fileName}.css`, getCssString());
+
+});
 
 // refer https://www.npmjs.com/package/spritesmith for further details

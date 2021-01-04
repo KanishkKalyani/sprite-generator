@@ -16,6 +16,17 @@ app.use('/user', require('./routes/user'));
 
 let folderName, outputFileName;
 
+let dir = './src/downloads';
+
+if (!fs.existsSync(dir)){
+    fs.mkdirSync(dir);
+}
+dir = './src/output';
+
+if (!fs.existsSync(dir)){
+    fs.mkdirSync(dir);
+}
+
 const startDownload = () => {
   return new Promise(function (resolve, reject) {
     axios.get('http://localhost:5000/user', {
@@ -75,7 +86,17 @@ const clearDirectories = () => {
       console.log(error); 
     } 
     else { 
-      console.log("Non Recursive: Directories Deleted!"); 
+      console.log("Recursive: Directories Deleted!"); 
+    } 
+  });
+  fs.rmdir("./src/output", { 
+    recursive: true, 
+  }, (error) => { 
+    if (error) { 
+      console.log(error); 
+    } 
+    else { 
+      console.log("Recursive: Directories Deleted! The CSS File is also deleted, will show it in UI"); 
     } 
   });
 }
@@ -88,6 +109,9 @@ function start() {
   setTimeout( () => {
     startUploadingSprite();
   }, 6000);
+  setTimeout( () => {
+    clearDirectories();
+  }, 10000);
 }
 
 // async function start() {
@@ -100,6 +124,10 @@ function start() {
 prompt.start();
 
 prompt.get(['Coudinary_Folder_Name', 'Output_Sprite_File_Name'], (err, result) => {
+  if (err) {
+    throw err;
+  }
+
   folderName = result.Coudinary_Folder_Name || 'hevo-blog-dev';
   outputFileName = result.Output_Sprite_File_Name || "output_sprite";
 

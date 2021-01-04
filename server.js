@@ -89,16 +89,6 @@ const clearDirectories = () => {
       console.log("Recursive: Directories Deleted!"); 
     } 
   });
-  fs.rmdir("./src/output", { 
-    recursive: true, 
-  }, (error) => { 
-    if (error) { 
-      console.log(error); 
-    } 
-    else { 
-      console.log("Recursive: Directories Deleted! The CSS File is also deleted, will show it in UI"); 
-    } 
-  });
 }
 
 function start() {

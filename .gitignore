@@ -1,5 +1,9 @@
 *.png
+*.jpg
+*.svg
 *.html
 *.css
+
+.env
 
 /node_modules

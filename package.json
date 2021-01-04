@@ -2,14 +2,25 @@
   "name": "sprite-generation-test",
   "version": "1.0.0",
   "description": "Testing Sprite Image Creation",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node server.js",
+    "start:server": "nodemon server.js"
   },
   "author": "Kanishk Kalyani",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.21.1",
+    "cloudinary": "^1.23.0",
+    "express": "^4.17.1",
+    "form-data": "^3.0.0",
+    "multer": "^1.4.2",
+    "prompt": "^1.1.0",
     "spritesmith": "^3.4.0"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "nodemon": "^2.0.6"
   }
 }

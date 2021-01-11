@@ -78,7 +78,7 @@ const downloadCloudinaryImages = async (
             );
             resolve(resp);
           }
-        });
+        }).catch(error => reject(error));
       }
     );
   }).catch((error) => {

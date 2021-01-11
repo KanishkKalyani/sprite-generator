@@ -36,7 +36,7 @@ const downloadCloudinaryImages = async (
           return;
         }
 
-        if (result?.resources?.length === 0) {
+        if (result && result.resources && result.resources.length === 0) {
           reject(`No Images found for folder ${folderName} in Cloudinary`);
           return;
         }

@@ -16,6 +16,7 @@ const generateSprite = (
   isSvgType
 ) => {
   return new Promise((resolve, reject) => {
+    const hashedFileName = getHashedName(fileName);
     const _dirname = './src/downloads';
     const _outputDir = './src/output';
     const dir = fs.opendirSync('./src/downloads');
@@ -58,7 +59,7 @@ const generateSprite = (
   .${getImageName(imageCoordinatesArr[0])} {
   width: ${imageCoordinatesArr[1].width}px;
   height: ${imageCoordinatesArr[1].height}px;
-  background: url('${fileName}.png') -${imageCoordinatesArr[1].x}px -${
+  background: url('${hashedFileName}.png') -${imageCoordinatesArr[1].x}px -${
             imageCoordinatesArr[1].y
           }px;
   }
@@ -80,7 +81,7 @@ const generateSprite = (
         setTimeout(async () => {
           const urlObj = await cloudinaryUploader(
             folderName,
-            getHashedName(fileName),
+            hashedFileName,
             isSvgType
           );
           resolve({

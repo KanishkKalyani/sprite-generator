@@ -6,7 +6,6 @@ const decoder = new StringDecoder('utf8');
 const { v4: uuid } = require('uuid');
 
 const cloudinaryUploader = require('./cloudinary-uploader');
-const { source } = require('../utils/cloudinary');
 
 const getHashedName = (fileName) => {
   return fileName + '_' + uuid().substring(0, 6);

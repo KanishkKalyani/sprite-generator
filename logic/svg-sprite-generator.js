@@ -106,7 +106,6 @@ const svgSpriteGenerator = (folderName, fileName, isSvgType) => {
       }, 3000);
     });
   }).catch((error) => {
-    console.log('Err', error);
     return error;
   });
 };

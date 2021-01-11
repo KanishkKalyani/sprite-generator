@@ -1,4 +1,5 @@
 const cloudinary = require('../utils/cloudinary');
+const path = require('path');
 const http = require('http');
 const fs = require('fs');
 
@@ -6,7 +7,12 @@ const generateSprite = require('./sprite-generator');
 const svgSpriteGenerator = require('./svg-sprite-generator');
 
 const file = (name, format) => {
-  return fs.createWriteStream(`./src/downloads/${name}.${format}`);
+  var fstream = fs.createWriteStream(`./src/downloads/${name}.${format}`);
+  fstream.on('error', function (err) {
+    console.log('File Write Stream ERROR:' + err);
+  });
+
+  return fstream;
 };
 
 const downloadCloudinaryImages = async (
@@ -37,7 +43,11 @@ const downloadCloudinaryImages = async (
 
         result.resources.map(({ url, public_id, format }) => {
           const request = http.get(url, function (response) {
-            response.pipe(file(public_id.substring(folderName.length), format));
+            if (path.parse(public_id).dir === folderName) {
+              response.pipe(
+                file(public_id.substring(folderName.length + 1), format)
+              );
+            }
           });
         });
 

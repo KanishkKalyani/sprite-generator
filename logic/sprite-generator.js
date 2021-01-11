@@ -56,13 +56,13 @@ const generateSprite = (
 
         const getSingleClassInCssFormat = (imageCoordinatesArr) => {
           return `
-  .${getImageName(imageCoordinatesArr[0])} {
-  width: ${imageCoordinatesArr[1].width}px;
-  height: ${imageCoordinatesArr[1].height}px;
-  background: url('${hashedFileName}.png') -${imageCoordinatesArr[1].x}px -${
+.${getImageName(imageCoordinatesArr[0])} {
+width: ${imageCoordinatesArr[1].width}px;
+height: ${imageCoordinatesArr[1].height}px;
+background: url('${hashedFileName}.png') -${imageCoordinatesArr[1].x}px -${
             imageCoordinatesArr[1].y
           }px;
-  }
+}
   `;
         };
 

@@ -6,15 +6,29 @@ const decoder = new StringDecoder('utf8');
 const { v4: uuid } = require('uuid');
 
 const cloudinaryUploader = require('./cloudinary-uploader');
+const { source } = require('../utils/cloudinary');
 
 const getHashedName = (fileName) => {
   return fileName + '_' + uuid().substring(0, 6);
 };
 
-const changeBackgroundUrl = (cssString, originalUrl, hashedFileName) => {
-  return cssString
+const changeBackgroundUrl = (
+  cssString,
+  originalUrl,
+  hashedFileName,
+  source
+) => {
+  let changedCssString = cssString
     .split(originalUrl.substring(originalUrl.length - 27))
     .join(`${hashedFileName}.svg`);
+
+  for (let i = 0; i < source.length; i++) {
+    changedCssString = changedCssString
+      .split(`svg-${source[i].substring(14, source[i].length - 4)}`)
+      .join(`${source[i].substring(14, source[i].length - 11)}`);
+  }
+
+  return changedCssString;
 };
 
 const svgSpriteGenerator = (folderName, fileName, isSvgType) => {
@@ -63,7 +77,8 @@ const svgSpriteGenerator = (folderName, fileName, isSvgType) => {
       cssString = changeBackgroundUrl(
         cssString,
         result.css['sprite'].path,
-        hashedFileName
+        hashedFileName,
+        source
       );
 
       if (error) {

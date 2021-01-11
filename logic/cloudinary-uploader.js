@@ -1,11 +1,16 @@
 const cloudinary = require('../utils/cloudinary');
+const { v4: uuid } = require('uuid');
+
+const getHashedName = (fileName) => {
+  return fileName + '_' + uuid().substring(0,6);
+}
 
 const cloudinaryUploader = (folderName, outputFileName, isSvgType) => {
   const uploadImage = new Promise((resolve, reject) => {
     cloudinary.uploader.upload(
       `src/output/${outputFileName}.${isSvgType ? 'svg' : 'png'}`,
       {
-        public_id: outputFileName,
+        public_id: getHashedName(outputFileName),
         folder: `${folderName}/sprite`,
         resource_type: 'auto',
       },
@@ -25,7 +30,7 @@ const cloudinaryUploader = (folderName, outputFileName, isSvgType) => {
     cloudinary.uploader.upload(
       `src/output/${outputFileName}.css`,
       {
-        public_id: outputFileName,
+        public_id: getHashedName(outputFileName),
         folder: `${folderName}/sprite`,
         resource_type: 'auto',
       },

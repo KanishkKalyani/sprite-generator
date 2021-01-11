@@ -41,17 +41,26 @@ const downloadCloudinaryImages = async (
           return;
         }
 
-        result.resources.map(({ url, public_id, format }) => {
-          const request = http.get(url, function (response) {
-            if (path.parse(public_id).dir === folderName) {
-              response.pipe(
-                file(public_id.substring(folderName.length + 1), format)
-              );
-            }
-          });
-        });
-
-        setTimeout(async () => {
+        Promise.all(
+          result.resources.map(({ url, public_id, format }) =>
+            new Promise((resolve, reject) =>
+              http.get(url, (response) => {
+                if (response.statusCode !== 200) {
+                  reject('Error' + response.statusMessage);
+                  return;
+                }
+                if (path.parse(public_id).dir === folderName) {
+                  response.pipe(
+                    file(public_id.substring(folderName.length + 1), format)
+                  );
+                }
+                resolve(public_id);
+              })
+            ).catch((err) => {
+              return err;
+            })
+          )
+        ).then(async () => {
           if (isSvgType) {
             const resp = await svgSpriteGenerator(
               folderName,
@@ -69,7 +78,7 @@ const downloadCloudinaryImages = async (
             );
             resolve(resp);
           }
-        }, 3000);
+        });
       }
     );
   }).catch((error) => {

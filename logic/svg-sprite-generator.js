@@ -71,7 +71,7 @@ const svgSpriteGenerator = (folderName, fileName, isSvgType) => {
       );
     }
 
-    spriter.compile(function (error, result, data) {
+    spriter.compile(async (error, result, data) => {
       let cssString = decoder.write(result.css['css'].contents);
       cssString = changeBackgroundUrl(
         cssString,
@@ -92,17 +92,15 @@ const svgSpriteGenerator = (folderName, fileName, isSvgType) => {
 
       fs.writeFileSync(_outputDir + `/${fileName}.css`, cssString);
 
-      setTimeout(async () => {
-        const urlObj = await cloudinaryUploader(
-          folderName,
-          hashedFileName,
-          isSvgType
-        );
-        resolve({
-          cssCode: cssString,
-          ...urlObj,
-        });
-      }, 3000);
+      const urlObj = await cloudinaryUploader(
+        folderName,
+        hashedFileName,
+        isSvgType
+      );
+      resolve({
+        cssCode: cssString,
+        ...urlObj,
+      });
     });
   }).catch((error) => {
     return error;

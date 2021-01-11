@@ -35,7 +35,7 @@ const generateSprite = (
         algorithm: algorithm,
         padding: padding,
       },
-      function handleResult(err, result) {
+      (err, result) => {
         // If there was an error, throw it
         if (err || !result) {
           reject(err);
@@ -77,6 +77,15 @@ background: url('${hashedFileName}.png') -${imageCoordinatesArr[1].x}px -${
         fs.writeFileSync(_outputDir + `/${fileName}.png`, result.image);
 
         fs.writeFileSync(_outputDir + `/${fileName}.css`, cssString);
+
+        // const dir = fs.opendirSync('src/output');
+        // let count = 0;
+        // let dirent;
+        // while ((dirent = dir.readSync()) !== null) {
+        //   if (dirent.name !== '.DS_Store') count++;
+        // }
+        // console.log('COUNT', count);
+        // dir.closeSync();
 
         setTimeout(async () => {
           const urlObj = await cloudinaryUploader(

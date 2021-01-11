@@ -3,11 +3,23 @@ const path = require('path');
 const fs = require('fs');
 const StringDecoder = require('string_decoder').StringDecoder;
 const decoder = new StringDecoder('utf8');
+const { v4: uuid } = require('uuid');
 
 const cloudinaryUploader = require('./cloudinary-uploader');
 
+const getHashedName = (fileName) => {
+  return fileName + '_' + uuid().substring(0, 6);
+};
+
+const changeBackgroundUrl = (cssString, originalUrl, hashedFileName) => {
+  return cssString
+    .split(originalUrl.substring(originalUrl.length - 27))
+    .join(`${hashedFileName}.svg`);
+};
+
 const svgSpriteGenerator = (folderName, fileName, isSvgType) => {
   return new Promise((resolve, reject) => {
+    const hashedFileName = getHashedName(fileName);
     // 1. Create and configure a spriter instance
     // ====================================================================
     const spriter = new SVGSpriter({
@@ -47,7 +59,12 @@ const svgSpriteGenerator = (folderName, fileName, isSvgType) => {
     }
 
     spriter.compile(function (error, result, data) {
-      const cssString = decoder.write(result.css['css'].contents);
+      let cssString = decoder.write(result.css['css'].contents);
+      cssString = changeBackgroundUrl(
+        cssString,
+        result.css['sprite'].path,
+        hashedFileName
+      );
 
       if (error) {
         reject(error);
@@ -58,15 +75,13 @@ const svgSpriteGenerator = (folderName, fileName, isSvgType) => {
         _outputDir + `/${fileName}.svg`,
         result.css['sprite'].contents
       );
-      fs.writeFileSync(
-        _outputDir + `/${fileName}.css`,
-        result.css['css'].contents
-      );
+
+      fs.writeFileSync(_outputDir + `/${fileName}.css`, cssString);
 
       setTimeout(async () => {
         const urlObj = await cloudinaryUploader(
           folderName,
-          fileName,
+          hashedFileName,
           isSvgType
         );
         resolve({
@@ -76,6 +91,7 @@ const svgSpriteGenerator = (folderName, fileName, isSvgType) => {
       }, 3000);
     });
   }).catch((error) => {
+    console.log('Err', error);
     return error;
   });
 };

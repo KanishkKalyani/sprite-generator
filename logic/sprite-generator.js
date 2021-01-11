@@ -1,7 +1,12 @@
 const fs = require('fs');
 const SpriteSmith = require('spritesmith');
+const { v4: uuid } = require('uuid');
 
 const cloudinaryUploader = require('./cloudinary-uploader');
+
+const getHashedName = (fileName) => {
+  return fileName + '_' + uuid().substring(0, 6);
+};
 
 const generateSprite = (
   folderName,
@@ -75,7 +80,7 @@ const generateSprite = (
         setTimeout(async () => {
           const urlObj = await cloudinaryUploader(
             folderName,
-            fileName,
+            getHashedName(fileName),
             isSvgType
           );
           resolve({

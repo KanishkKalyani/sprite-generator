@@ -9,7 +9,7 @@ dotenv.config();
 const { NODE_ENV, PORT } = process.env;
 
 const isDevelopment = NODE_ENV === 'development';
-const ACTIVE_PORT = PORT || 8000;
+const ACTIVE_PORT = PORT || 5000;
 
 // Middleware
 app.use(bodyParser.json());

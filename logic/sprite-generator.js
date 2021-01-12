@@ -35,7 +35,7 @@ const generateSprite = (
         algorithm: algorithm,
         padding: padding,
       },
-      function handleResult(err, result) {
+      async (err, result) => {
         // If there was an error, throw it
         if (err || !result) {
           reject(err);
@@ -78,17 +78,15 @@ background: url('${hashedFileName}.png') -${imageCoordinatesArr[1].x}px -${
 
         fs.writeFileSync(_outputDir + `/${fileName}.css`, cssString);
 
-        setTimeout(async () => {
-          const urlObj = await cloudinaryUploader(
-            folderName,
-            hashedFileName,
-            isSvgType
-          );
-          resolve({
-            cssCode: cssString,
-            ...urlObj,
-          });
-        }, 3000);
+        const urlObj = await cloudinaryUploader(
+          folderName,
+          hashedFileName,
+          isSvgType
+        );
+        resolve({
+          cssCode: cssString,
+          ...urlObj,
+        });
       }
     );
   }).catch((error) => {

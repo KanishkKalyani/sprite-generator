@@ -64,7 +64,7 @@ const generateSprite = (
             imageCoordinatesArr[1].x
           }px -${imageCoordinatesArr[1].y}px;
 }
-  `;
+`;
         };
 
         const getImageName = (imageSrc) => {

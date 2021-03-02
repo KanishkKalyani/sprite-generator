@@ -11,7 +11,7 @@ const cloudinaryUploader = (folderName, outputFileName, isSvgType) => {
         folder: `${folderName}/sprite`,
         resource_type: 'auto',
       },
-      function (error, result) {
+      (error, result) => {
         if (error || !result) {
           reject('Upload to Cloudinary failed');
         } else {
@@ -34,7 +34,7 @@ const cloudinaryUploader = (folderName, outputFileName, isSvgType) => {
         folder: `${folderName}/sprite`,
         resource_type: 'auto',
       },
-      function (error, result) {
+      (error, result) => {
         if (error || !result) {
           reject('Upload to Cloudinary failed');
         } else {

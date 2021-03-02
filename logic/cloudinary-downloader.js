@@ -7,8 +7,8 @@ const generateSprite = require('./sprite-generator');
 const svgSpriteGenerator = require('./svg-sprite-generator');
 
 const file = (name, format) => {
-  var fstream = fs.createWriteStream(`./src/downloads/${name}.${format}`);
-  fstream.on('error', function (err) {
+  const fstream = fs.createWriteStream(`./src/downloads/${name}.${format}`);
+  fstream.on('error', (err) => {
     console.log('File Write Stream ERROR:' + err);
   });
 
@@ -40,6 +40,8 @@ const downloadCloudinaryImages = async (
           reject(`No Images found for folder ${folderName} in Cloudinary`);
           return;
         }
+        const lengthOfBaseRoute = result.resources[0].secure_url.lastIndexOf('/');
+        const baseRoute = result.resources[0].secure_url.substring(0, lengthOfBaseRoute+1)
 
         Promise.all(
           result.resources.map(({ url, public_id, format }) =>
@@ -65,6 +67,7 @@ const downloadCloudinaryImages = async (
             const resp = await svgSpriteGenerator(
               folderName,
               outputFileName,
+              baseRoute,
               isSvgType
             );
             resolve(resp);
@@ -74,6 +77,7 @@ const downloadCloudinaryImages = async (
               outputFileName,
               algorithm,
               padding,
+              baseRoute,
               isSvgType
             );
             resolve(resp);

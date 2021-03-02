@@ -13,6 +13,7 @@ const generateSprite = (
   fileName,
   algorithm,
   padding,
+  baseRoute,
   isSvgType
 ) => {
   return new Promise((resolve, reject) => {
@@ -59,7 +60,7 @@ const generateSprite = (
 .${getImageName(imageCoordinatesArr[0])} {
 width: ${imageCoordinatesArr[1].width}px;
 height: ${imageCoordinatesArr[1].height}px;
-background: url('${hashedFileName}.png') -${imageCoordinatesArr[1].x}px -${
+background: url('${baseRoute}sprite/${hashedFileName}.png') -${imageCoordinatesArr[1].x}px -${
             imageCoordinatesArr[1].y
           }px;
 }

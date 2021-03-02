@@ -40,13 +40,9 @@ const downloadCloudinaryImages = async (
           reject(`No Images found for folder ${folderName} in Cloudinary`);
           return;
         }
-        const lengthOfBaseRoute = result.resources[0].secure_url.lastIndexOf(
-          '/'
-        );
-        const baseRoute = result.resources[0].secure_url.substring(
-          0,
-          lengthOfBaseRoute + 1
-        );
+        const secureUrl = result.resources[0].secure_url;
+        const lengthOfBaseRoute = secureUrl.lastIndexOf('/');
+        const baseRoute = secureUrl.substring(0, lengthOfBaseRoute + 1);
 
         Promise.all(
           result.resources.map(({ url, public_id, format }) =>

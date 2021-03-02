@@ -19,9 +19,7 @@ const cloudinaryUploader = (folderName, outputFileName, isSvgType) => {
         }
       }
     );
-  }).catch((error) => {
-    return error;
-  });
+  }).catch((error) => error);
 
   const uploadCssFile = new Promise((resolve, reject) => {
     cloudinary.uploader.upload(
@@ -42,9 +40,7 @@ const cloudinaryUploader = (folderName, outputFileName, isSvgType) => {
         }
       }
     );
-  }).catch((error) => {
-    return error;
-  });
+  }).catch((error) => error);
 
   return Promise.all([uploadImage, uploadCssFile])
     .then((value) => {
@@ -53,9 +49,7 @@ const cloudinaryUploader = (folderName, outputFileName, isSvgType) => {
         cssFileUrl: value[1],
       };
     })
-    .catch((error) => {
-      return error;
-    });
+    .catch((error) => error);
 };
 
 module.exports = cloudinaryUploader;

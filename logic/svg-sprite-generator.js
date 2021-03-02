@@ -104,9 +104,7 @@ const svgSpriteGenerator = (folderName, fileName, baseRoute, isSvgType) => {
         ...urlObj,
       });
     });
-  }).catch((error) => {
-    return error;
-  });
+  }).catch((error) => error);
 };
 
 module.exports = svgSpriteGenerator;

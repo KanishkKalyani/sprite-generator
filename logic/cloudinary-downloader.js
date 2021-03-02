@@ -8,10 +8,6 @@ const svgSpriteGenerator = require('./svg-sprite-generator');
 
 const file = (name, format) => {
   const fstream = fs.createWriteStream(`./src/downloads/${name}.${format}`);
-  fstream.on('error', (err) => {
-    console.log('File Write Stream ERROR:' + err);
-  });
-
   return fstream;
 };
 
@@ -53,15 +49,29 @@ const downloadCloudinaryImages = async (
                   return;
                 }
                 if (path.parse(public_id).dir === folderName) {
-                  response.pipe(
-                    file(public_id.substring(folderName.length + 1), format)
-                  );
+                  new Promise((finish, error) => {
+                    const fileRes = file(
+                      public_id.substring(folderName.length + 1),
+                      format
+                    );
+                    response.pipe(fileRes);
+
+                    fileRes
+                      .on('finish', () => {
+                        finish(public_id);
+                      })
+                      .on('error', (err) => {
+                        console.log('File Write Stream ERROR:' + err);
+                        error(err);
+                      });
+                  })
+                    .then(() => {
+                      resolve(public_id);
+                    })
+                    .catch((error) => error);
                 }
-                resolve(public_id);
               })
-            ).catch((err) => {
-              return err;
-            })
+            ).catch((error) => error)
           )
         )
           .then(async () => {

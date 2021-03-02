@@ -72,7 +72,12 @@ const svgSpriteGenerator = (folderName, fileName, baseRoute, isSvgType) => {
       );
     }
 
-    spriter.compile(async (error, result, data) => {
+    spriter.compile(async (error, result) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
       let cssString = decoder.write(result.css['css'].contents);
       cssString = changeBackgroundUrl(
         cssString,
@@ -81,11 +86,6 @@ const svgSpriteGenerator = (folderName, fileName, baseRoute, isSvgType) => {
         source,
         baseRoute
       );
-
-      if (error) {
-        reject(error);
-        return;
-      }
 
       fs.writeFileSync(
         _outputDir + `/${fileName}.svg`,

@@ -40,8 +40,13 @@ const downloadCloudinaryImages = async (
           reject(`No Images found for folder ${folderName} in Cloudinary`);
           return;
         }
-        const lengthOfBaseRoute = result.resources[0].secure_url.lastIndexOf('/');
-        const baseRoute = result.resources[0].secure_url.substring(0, lengthOfBaseRoute+1)
+        const lengthOfBaseRoute = result.resources[0].secure_url.lastIndexOf(
+          '/'
+        );
+        const baseRoute = result.resources[0].secure_url.substring(
+          0,
+          lengthOfBaseRoute + 1
+        );
 
         Promise.all(
           result.resources.map(({ url, public_id, format }) =>
@@ -62,27 +67,29 @@ const downloadCloudinaryImages = async (
               return err;
             })
           )
-        ).then(async () => {
-          if (isSvgType) {
-            const resp = await svgSpriteGenerator(
-              folderName,
-              outputFileName,
-              baseRoute,
-              isSvgType
-            );
-            resolve(resp);
-          } else {
-            const resp = await generateSprite(
-              folderName,
-              outputFileName,
-              algorithm,
-              padding,
-              baseRoute,
-              isSvgType
-            );
-            resolve(resp);
-          }
-        }).catch(error => reject(error));
+        )
+          .then(async () => {
+            if (isSvgType) {
+              const resp = await svgSpriteGenerator(
+                folderName,
+                outputFileName,
+                baseRoute,
+                isSvgType
+              );
+              resolve(resp);
+            } else {
+              const resp = await generateSprite(
+                folderName,
+                outputFileName,
+                algorithm,
+                padding,
+                baseRoute,
+                isSvgType
+              );
+              resolve(resp);
+            }
+          })
+          .catch((error) => reject(error));
       }
     );
   }).catch((error) => {

@@ -1,5 +1,4 @@
 const cloudinary = require('../utils/cloudinary');
-const path = require('path');
 const http = require('http');
 const fs = require('fs');
 
@@ -20,18 +19,12 @@ const downloadCloudinaryImages = async (
 ) => {
   return new Promise((resolve, reject) => {
     // Get images from cloudinary
-    const result = cloudinary.api.resources(
-      {
-        type: 'upload',
-        prefix: folderName,
-        max_results: 50,
-      },
-      (error, result) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-
+    return cloudinary.search
+      .expression(`folder=${folderName}`)
+      .sort_by('public_id', 'desc')
+      .max_results(50)
+      .execute()
+      .then((result) => {
         if (result && result.resources && result.resources.length === 0) {
           reject(`No Images found for folder ${folderName} in Cloudinary`);
           return;
@@ -41,19 +34,23 @@ const downloadCloudinaryImages = async (
         const lengthOfBaseRoute = secureUrl.lastIndexOf('/');
         const baseRoute = secureUrl.substring(0, lengthOfBaseRoute + 1);
 
-        // Filter subfolder files before writing
-        const filteredResources = result.resources.filter(({ public_id }) => {
-          return path.parse(public_id).dir === folderName;
-        });
-
         Promise.all(
-          filteredResources.map(({ url, public_id, format }) =>
+          result.resources.map(({ url, public_id, format }) =>
             new Promise((resolve, reject) =>
               http.get(url, (response) => {
                 if (response.statusCode !== 200) {
                   reject('Error' + response.statusMessage);
                   return;
                 }
+
+                if (format !== 'svg' && isSvgType) {
+                  reject(`File with ${format} format type found`);
+                  return;
+                } else if (format === 'svg' && !isSvgType) {
+                  reject(`File with ${format} format type found`);
+                  return;
+                }
+
                 new Promise((finish, error) => {
                   const fileRes = file(
                     public_id.substring(folderName.length + 1),
@@ -73,9 +70,9 @@ const downloadCloudinaryImages = async (
                   .then(() => {
                     resolve(public_id);
                   })
-                  .catch((error) => error);
+                  .catch((error) => reject(error));
               })
-            ).catch((error) => error)
+            ).catch((error) => reject(error))
           )
         )
           .then(async () => {
@@ -100,8 +97,8 @@ const downloadCloudinaryImages = async (
             }
           })
           .catch((error) => reject(error));
-      }
-    );
+      })
+      .catch((error) => reject(error));
   }).catch((error) => {
     return { error };
   });

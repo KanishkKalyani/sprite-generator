@@ -36,40 +36,44 @@ const downloadCloudinaryImages = async (
           reject(`No Images found for folder ${folderName} in Cloudinary`);
           return;
         }
+
         const secureUrl = result.resources[0].secure_url;
         const lengthOfBaseRoute = secureUrl.lastIndexOf('/');
         const baseRoute = secureUrl.substring(0, lengthOfBaseRoute + 1);
 
+        // Filter subfolder files before writing
+        const filteredResources = result.resources.filter(({ public_id }) => {
+          return path.parse(public_id).dir === folderName;
+        });
+
         Promise.all(
-          result.resources.map(({ url, public_id, format }) =>
+          filteredResources.map(({ url, public_id, format }) =>
             new Promise((resolve, reject) =>
               http.get(url, (response) => {
                 if (response.statusCode !== 200) {
                   reject('Error' + response.statusMessage);
                   return;
                 }
-                if (path.parse(public_id).dir === folderName) {
-                  new Promise((finish, error) => {
-                    const fileRes = file(
-                      public_id.substring(folderName.length + 1),
-                      format
-                    );
-                    response.pipe(fileRes);
+                new Promise((finish, error) => {
+                  const fileRes = file(
+                    public_id.substring(folderName.length + 1),
+                    format
+                  );
+                  response.pipe(fileRes);
 
-                    fileRes
-                      .on('finish', () => {
-                        finish(public_id);
-                      })
-                      .on('error', (err) => {
-                        console.log('File Write Stream ERROR:' + err);
-                        error(err);
-                      });
-                  })
-                    .then(() => {
-                      resolve(public_id);
+                  fileRes
+                    .on('finish', () => {
+                      finish(public_id);
                     })
-                    .catch((error) => error);
-                }
+                    .on('error', (err) => {
+                      console.log('File Write Stream ERROR:' + err);
+                      error(err);
+                    });
+                })
+                  .then(() => {
+                    resolve(public_id);
+                  })
+                  .catch((error) => error);
               })
             ).catch((error) => error)
           )

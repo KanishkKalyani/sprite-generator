@@ -15,11 +15,12 @@ const changeBackgroundUrl = (
   cssString,
   originalUrl,
   hashedFileName,
-  source
+  source,
+  baseRoute
 ) => {
   let changedCssString = cssString
     .split(originalUrl.substring(originalUrl.length - 27))
-    .join(`${hashedFileName}.svg`);
+    .join(`${baseRoute}sprite/${hashedFileName}.svg`);
 
   for (let i = 0; i < source.length; i++) {
     changedCssString = changedCssString
@@ -30,7 +31,7 @@ const changeBackgroundUrl = (
   return changedCssString;
 };
 
-const svgSpriteGenerator = (folderName, fileName, isSvgType) => {
+const svgSpriteGenerator = (folderName, fileName, baseRoute, isSvgType) => {
   return new Promise((resolve, reject) => {
     const hashedFileName = getHashedName(fileName);
     // 1. Create and configure a spriter instance
@@ -71,19 +72,20 @@ const svgSpriteGenerator = (folderName, fileName, isSvgType) => {
       );
     }
 
-    spriter.compile(async (error, result, data) => {
+    spriter.compile(async (error, result) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
       let cssString = decoder.write(result.css['css'].contents);
       cssString = changeBackgroundUrl(
         cssString,
         result.css['sprite'].path,
         hashedFileName,
-        source
+        source,
+        baseRoute
       );
-
-      if (error) {
-        reject(error);
-        return;
-      }
 
       fs.writeFileSync(
         _outputDir + `/${fileName}.svg`,
@@ -102,9 +104,7 @@ const svgSpriteGenerator = (folderName, fileName, isSvgType) => {
         ...urlObj,
       });
     });
-  }).catch((error) => {
-    return error;
-  });
+  }).catch((error) => error);
 };
 
 module.exports = svgSpriteGenerator;

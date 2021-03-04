@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 
 dotenv.config();
 
-const { NODE_ENV, PORT } = process.env;
+const { NODE_ENV, PORT, CLIENT_URL } = process.env;
 
 const isDevelopment = NODE_ENV === 'development';
 const ACTIVE_PORT = PORT || 5000;
@@ -19,7 +19,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 if (isDevelopment) {
   app.use(cors());
 } else {
-  app.use(cors({ origin: '*', optionsSuccessStatus: 200 }));
+  app.use(cors({ origin: CLIENT_URL, optionsSuccessStatus: 200 }));
+}
+
+if (NODE_ENV === "production") {
+	app.use(express.static(path.join(__dirname, "build")));
+
+	app.get("*", function (req, res) {
+		res.sendFile(path.join(__dirname, "build", "index.html"));
+	});
 }
 
 // Route

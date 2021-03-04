@@ -68,7 +68,7 @@ const generateSprite = (
         };
 
         const getImageName = (imageSrc) => {
-          return imageSrc.substring(16, imageSrc.length - 4);
+          return imageSrc.substring(16, imageSrc.length - 11).toLowerCase();
         };
 
         // Output the image and the CSS file -
